@@ -1,9 +1,35 @@
 <html>
 	<head>
+		<!--solution to the fizzbuzz test: a script that prints the numbers from 1 to 100 but for pultiples of 3 prints "fizz", for the multiples of 5 prints "buzz" and for the multiples of 15 prints "fizzbuzz"-->
 		<title>FizzBuzz Solution</title>
 	</head>
 	<body>
-		<ol>
+		<ol id="iterations">
 		</ol>
+		<script>
+			var fizzbuzz = (function(){
+				var list = document.getElementById("iterations");
+				var mod5;
+				var mod3;
+				var to_plot;
+				var list_item;
+				var item;
+				for (var i = 1; i <= 100; i++)
+				{
+					to_plot = "";
+					mod5 = i%5;
+					mod3 = i%3;
+					if((mod3 !== 0) && (mod5 !== 0)) to_plot = i;
+					else{
+						if(mod3 === 0) to_plot = "Fizz";
+						if(mod5 === 0) to_plot += "Buzz";
+					}
+					list_item = document.createElement("LI");
+					item = document.createTextNode(to_plot);
+					list_item.appendChild(item);
+					list.appendChild(list_item);
+				}
+			}());
+		</script>
 	</body>
 </html>
