@@ -1,0 +1,77 @@
+<html>
+	<head>
+		<title>Resolution Calculator</title>
+		<!--A web app that calculate the resolution of a display-->
+		<style>
+			form{
+				width: 10%;
+				min-width: 190px;
+				margin: auto;
+			}
+
+			form > div{
+				padding:3px;
+			}
+
+			form > div > input{
+				float: right;
+				width: 55px;
+			}
+
+			form > label{
+				font-weight: bold;
+			}
+		</style>
+	</head>
+	<body>
+		<form id="form">
+			<div>
+				<label for="hpixels">Horizzontal Pixels:</label>
+				<input type="number" name="hpixels" id="hpixels" min = "0" required/>
+			</div>
+			<div>
+				<label for="vpixels">Vertical Pixels:</label>
+				<input type="number" name="vpixels" id="vpixels" min = "0" required/>
+			</div>
+			<div>
+				<label for="diag">Diagonal [inches]:</label>
+				<input type="text" name="diag" id="diag" pattern = "^[0-9]{1,3}(\.)?[0-9]{0,2}" required/>
+			</div>
+			<button onclick = "calculate()" type = "button">Calculate</button><br>
+			<label id="result"></label>
+		</form>
+	</body>
+	<script>
+		function calculate(){
+			var form = document.getElementById("form");
+			if (form.checkValidity()){
+				/*
+				diag^2 = v^2 + h^2
+				v^2 = (vpixels/hpixels)^2 * h^2
+
+				diag^2 = (1 + (vpixels/hpixels)^2) * h^2
+
+				h^2 = diag^2 / (1 + (vpixels/hpixels)^2)
+
+				h = sqrt(diag^2 / (1 + (vpixels/hpixels)^2))
+
+				dpi = hpixels / sqrt(diag^2 / (1 + (vpixels/hpixels)^2))
+				*/
+				var hp = document.getElementById("hpixels").value;
+				var vp = document.getElementById("vpixels").value;
+				var diag = document.getElementById("diag").value;
+				var sq_diag = Math.pow(diag,2);
+				var sub = 1 + (Math.pow(vp/hp, 2));
+				var sq_h = sq_diag / sub;
+
+				var h = Math.sqrt(sq_h);
+				var dpi = hp/h;
+				document.getElementById("result").innerHTML = "Resolution = "+ Math.round(dpi) +" dpi";
+			}
+			else{
+				document.getElementById("result").innerHTML = "Invalid Fields";
+			}
+			
+		}
+	</script>
+</html>
