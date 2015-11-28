@@ -1,41 +1,53 @@
 <html>
 	<head>
+		<!--Web App that permits to load a banch of local images and resize them-->
 		<title>Image Resizer</title>
-		
 	</head>
 	<body>
-		<div ng-app = "imageResizer">
-			<div ng-controller = "irController">
-				<input type="file" fileread="files" multiple>
-				<p>{{files}}</p>
-			</div>
+		<input type="file" fileread="files" onchange = "load()" id = "files" accept="image/*" multiple>
+		<div id="iterations">
 		</div>
+		<script>
+			function load() {
+				var fileInput = document.getElementById("files");
+				var fileList = fileInput.files;
+
+				var iterations = document.getElementById("iterations");
+				
+				while (iterations.firstChild) {
+				    iterations.removeChild(iterations.firstChild);
+				}
+
+				for (var i = 0; i<fileList.length; i++){
+					var canvas = document.createElement("canvas");
+					iterations.appendChild(canvas);
+				}
+
+				var canvases = document.getElementsByTagName("canvas");
+				
+				var c = 0;
+
+				//use a self-invoking to draw images in canvases and wait to complete the drawing before passing to the next image.
+				(function draw(){
+					var img = new Image();
+					var reader = new FileReader();
+					var the_canvas = canvases[c];
+					var context = the_canvas.getContext("2d");
+					reader.onload = function(e){
+						img.src = e.target.result;
+					}
+					img.onload = function(){
+						the_canvas.width = img.width;
+						the_canvas.height = img.height;
+						
+						context.drawImage(img,0,0,img.width,img.height);
+						c++;
+						if (c<canvases.length) draw();
+					}
+					reader.readAsDataURL(fileList[c]);	
+				})();
+
+			}
+		</script>
 	</body>
-	<script type="text/javascript" src="js/angular.min.js"> </script>
-	<script>
-		var resizer = angular.module("imageResizer", []);
-
-		resizer.directive("fileread", [function () {
-		    return {
-		        scope: {
-		            fileread: "="
-		        },
-		        link: function (scope, element, attributes) {
-		            element.bind("change", function (changeEvent) {
-		                var reader = new FileReader();
-		                reader.onload = function (loadEvent) {
-		                    scope.$apply(function () {
-		                        scope.fileread = loadEvent.target.result;
-		                    });
-		                }
-		                reader.readAsDataURL(changeEvent.target.files[0]);
-		            });
-		        }
-		    }
-		}]);
-
-		resizer.controller("irController", ["$scope", function($scope){
-			$scope.files;
-		}]);
-	</script>
 </html>
