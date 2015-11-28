@@ -1,12 +1,41 @@
 <html>
 	<head>
 		<title>Image Resizer</title>
-		<script type="text/javascript" src="js/angular.min.js" defer> </script>
+		
 	</head>
 	<body>
-		<input type="file" multiple>
+		<div ng-app = "imageResizer">
+			<div ng-controller = "irController">
+				<input type="file" fileread="files" multiple>
+				<p>{{files}}</p>
+			</div>
+		</div>
 	</body>
+	<script type="text/javascript" src="js/angular.min.js"> </script>
 	<script>
-		
+		var resizer = angular.module("imageResizer", []);
+
+		resizer.directive("fileread", [function () {
+		    return {
+		        scope: {
+		            fileread: "="
+		        },
+		        link: function (scope, element, attributes) {
+		            element.bind("change", function (changeEvent) {
+		                var reader = new FileReader();
+		                reader.onload = function (loadEvent) {
+		                    scope.$apply(function () {
+		                        scope.fileread = loadEvent.target.result;
+		                    });
+		                }
+		                reader.readAsDataURL(changeEvent.target.files[0]);
+		            });
+		        }
+		    }
+		}]);
+
+		resizer.controller("irController", ["$scope", function($scope){
+			$scope.files;
+		}]);
 	</script>
 </html>
