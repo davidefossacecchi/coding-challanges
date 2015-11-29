@@ -23,29 +23,43 @@
 			    opacity: 0;
 			    filter: alpha(opacity=0);
 			}
+
+			#iterations{
+				display: none;
+			}
+
+			#thumbnails > img{
+				width: 20%;
+				margin: 2%;
+				float: left;
+			}
+
+			#thumbnails{
+				margin: auto;
+			}
 		</style>
 	</head>
 	<body>
 		<div class="row">
 			<div class="large-6 small-centered columns">
 				<div class="row">
-					<div class="fileUpload button large-3 small-centered columns">
+					<div class="fileUpload button small-3 small-centered columns">
 	    				<span>Choose Files</span>
 	    				<input type="file" class="upload" onchange = "load()" id = "files" accept="image/*" autocomplete="off" multiple>
 					</div>
 				</div>
 				<div class="row">
-					<div class="large-2 columns">
-						<label class="right inline" for="width">Width [px]: </label>
+					<div class="medium-3 columns">
+						<label class="right inline" for="width" style="text-align:right;">Width [px]: </label>
 					</div>
-					<div class="large-3 columns">
-						<input type="number" name="width" id="width" autocomplete="off" value=""/>
+					<div class="medium-3 columns">
+						<input type="number" name="width" id="width" autocomplete="off" value="1920"/>
 					</div>
-					<div class="large-3 large-offset-1 columns">
+					<div class="medium-3 columns">
 						<label class="right inline" for="height" style="text-align:right;">Height [px]: </label>
 					</div>
-					<div class="large-3 columns">
-						<input type="number" name="height" id="height" autocomplete="off" value=""/>
+					<div class="medium-3 columns">
+						<input type="number" name="height" id="height" autocomplete="off" value="1080"/>
 					</div>
 				</div>
 				<div class="row">
@@ -63,14 +77,15 @@
 					</div>
 				</div>
 				<div class="row">
-					<div class="large-5 small-centered columns">
+					<div class="medium-5 small-centered columns">
 						<button class="button" onclick="resize()" type="button" id="go">Resize</button>
 						<button class="button" onclick = "save()" type="button" id="save">Save</button>
 					</div>
 				</div>
 			</div>
 		</div>
-
+		<div id="thumbnails">
+		</div>
 		<div id="iterations">
 		</div>
 		<script type="text/javascript" src="js/vendor/jquery.min.js"></script>
@@ -85,9 +100,13 @@
 				var canvases = [];
 
 				var iterations = document.getElementById("iterations");
-				
+				var thumbnails = document.getElementById("thumbnails");
 				while (iterations.firstChild) {
 				    iterations.removeChild(iterations.firstChild);
+				}
+
+				while (thumbnails.firstChild) {
+				    thumbnails.removeChild(thumbnails.firstChild);
 				}
 
 				for (var i = 0; i<fileList.length; i++){
@@ -113,6 +132,7 @@
 						the_canvas.height = img.height;
 						
 						context.drawImage(img,0,0,img.width,img.height);
+						thumbnails.appendChild(img);
 						c++;
 						if (c<canvases.length) draw();
 					}
@@ -180,12 +200,12 @@
 					img.onload = function(){
 						var index = img.src.indexOf(",");
 						var data = img.src.substring(index + 1, img.src.length);
-						zip.file(i+".jpeg",data,{base64:true});
+						zip.file("image"+i+".jpeg",data,{base64:true});
 						i++;
 						if(i<canvases.length) write();
 						else{
 							var content = zip.generate({type:"blob"});
-							saveAs(content, "example.zip");
+							saveAs(content, "output.zip");
 						}
 					}
 					img.src = the_canvas.toDataURL("image/jpeg", compression);
