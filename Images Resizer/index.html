@@ -2,12 +2,15 @@
 	<head>
 		<!--Web App that permits to load a banch of local images and resize them-->
 		<title>Image Resizer</title>
+		<script type="text/javascript" src="js/FileSaver.min.js"></script>
+		<script type="text/javascript" src="js/jszip.min.js"></script>
 	</head>
 	<body>
 		<input type="file" fileread="files" onchange = "load()" id = "files" accept="image/*" autocomplete="off" multiple>
 		<label for="width">Width [px]: </label><input type="number" name="width" id="width" autocomplete="off" value=""/>
 		<label for="height">Height [px]: </label><input type="number" name="height" id="height" autocomplete="off" value=""/>
-		<button onclick = "resize()" type="button" id="go">Resize</button>
+		<button onclick="resize()" type="button" id="go">Resize</button>
+		<button onclick = "save()" type="button" id="save">Save</button>
 		<div id="iterations">
 		</div>
 		<script>
@@ -39,6 +42,7 @@
 					var context = the_canvas.getContext("2d");
 					reader.onload = function(e){
 						img.src = e.target.result;
+						console.log(img.src);
 					}
 					img.onload = function(){
 						the_canvas.width = img.width;
@@ -66,10 +70,10 @@
 					var the_canvas = canvases[i];
 					var img = new Image();
 					img.onload = function(){
-						console.log("entrato");
+						
 						p_height = Math.abs(the_canvas.height - height) / the_canvas.height;
 						p_width = Math.abs(the_canvas.width - width) / the_canvas.width;
-						console.log("calcolate le dimensioni");
+						
 						var aspect_ratio = the_canvas.width / the_canvas.height; //width on height
 						
 						if(p_height < p_width){
@@ -81,7 +85,7 @@
 							the_canvas.width = width;
 						}
 
-						console.log("fatto il resize");
+						
 						
 						img.height = the_canvas.height;
 						img.width = the_canvas.width;
@@ -96,7 +100,29 @@
 							button.disabled = false;
 						}
 					}
-					img.src = the_canvas.toDataURL();
+					img.src = the_canvas.toDataURL("image/jpeg");
+				})();
+			}
+
+			function save(){
+				var canvases = document.getElementsByTagName("canvas");
+				var zip = new JSZip();
+				var i = 0;
+				(function write(){
+					var the_canvas = canvases[i];
+					var img = new Image();
+					img.onload = function(){
+						var index = img.src.indexOf(",");
+						var data = img.src.substring(index + 1, img.src.length);
+						zip.file(i+".jpeg",data,{base64:true});
+						i++;
+						if(i<canvases.length) write();
+						else{
+							var content = zip.generate({type:"blob"});
+							saveAs(content, "example.zip");
+						}
+					}
+					img.src = the_canvas.toDataURL("image/jpeg");
 				})();
 			}
 		</script>
