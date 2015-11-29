@@ -2,17 +2,81 @@
 	<head>
 		<!--Web App that permits to load a banch of local images and resize them-->
 		<title>Image Resizer</title>
+
 		<script type="text/javascript" src="js/FileSaver.min.js"></script>
 		<script type="text/javascript" src="js/jszip.min.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/foundation.min.css">
+		<style>
+			.fileUpload {
+			    position: relative;
+			    overflow: hidden;
+			    margin: 10px;
+			}
+			.fileUpload input.upload {
+			    position: absolute;
+			    top: 0;
+			    right: 0;
+			    margin: 0;
+			    padding: 0;
+			    font-size: 20px;
+			    cursor: pointer;
+			    opacity: 0;
+			    filter: alpha(opacity=0);
+			}
+		</style>
 	</head>
 	<body>
-		<input type="file" fileread="files" onchange = "load()" id = "files" accept="image/*" autocomplete="off" multiple>
-		<label for="width">Width [px]: </label><input type="number" name="width" id="width" autocomplete="off" value=""/>
-		<label for="height">Height [px]: </label><input type="number" name="height" id="height" autocomplete="off" value=""/>
-		<button onclick="resize()" type="button" id="go">Resize</button>
-		<button onclick = "save()" type="button" id="save">Save</button>
+		<div class="row">
+			<div class="large-6 small-centered columns">
+				<div class="row">
+					<div class="fileUpload button large-3 small-centered columns">
+	    				<span>Choose Files</span>
+	    				<input type="file" class="upload" onchange = "load()" id = "files" accept="image/*" autocomplete="off" multiple>
+					</div>
+				</div>
+				<div class="row">
+					<div class="large-2 columns">
+						<label class="right inline" for="width">Width [px]: </label>
+					</div>
+					<div class="large-3 columns">
+						<input type="number" name="width" id="width" autocomplete="off" value=""/>
+					</div>
+					<div class="large-3 large-offset-1 columns">
+						<label class="right inline" for="height" style="text-align:right;">Height [px]: </label>
+					</div>
+					<div class="large-3 columns">
+						<input type="number" name="height" id="height" autocomplete="off" value=""/>
+					</div>
+				</div>
+				<div class="row">
+					<div class='small-3 columns'>
+						<label class="right inline" for="height" style="text-align:right;">Compression [%]:</label>
+					</div>
+					<div class='small-7 columns'>
+						<div class="slider" data-slider data-initial-start='80' >
+							<span class="slider-handle"  data-slider-handle role="slider" tabindex="1" aria-controls='compression'></span>
+							<span class="slider-fill" data-slider-fill></span>
+						</div>
+					</div>
+					<div class='small-2 columns'>
+					  	<input type="number" id='compression'>
+					</div>
+				</div>
+				<div class="row">
+					<div class="large-5 small-centered columns">
+						<button class="button" onclick="resize()" type="button" id="go">Resize</button>
+						<button class="button" onclick = "save()" type="button" id="save">Save</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
 		<div id="iterations">
 		</div>
+		<script type="text/javascript" src="js/vendor/jquery.min.js"></script>
+		<script type="text/javascript" src="js/vendor/what-input.min.js"></script>
+		<script type="text/javascript" src="js/foundation.min.js"></script>
+		<script>$(document).foundation()</script>
 		<script>
 			function load() {
 				var fileInput = document.getElementById("files");
@@ -107,6 +171,8 @@
 			function save(){
 				var canvases = document.getElementsByTagName("canvas");
 				var zip = new JSZip();
+				var compression = Math.round(document.getElementById("compression").value)/100;
+				console.log(compression);
 				var i = 0;
 				(function write(){
 					var the_canvas = canvases[i];
@@ -122,7 +188,7 @@
 							saveAs(content, "example.zip");
 						}
 					}
-					img.src = the_canvas.toDataURL("image/jpeg");
+					img.src = the_canvas.toDataURL("image/jpeg", compression);
 				})();
 			}
 		</script>
